@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
 )
 
 // Represents the game of Five Hand, a poker game with 6 hands.
@@ -11,27 +12,38 @@ import (
 type FiveHand struct {
 	deck *Deck
 	hands []*Hand
+	j_Flag bool
+	s_Flag bool
+	s_Count int
 }
 
 
 // Initializes a new Five Hand game with a list of 6 empty hands and a deck of cards.
 // If command line arguments are provided, it builds a file deck; otherwise, it builds a randomized deck.
 // param: file - String representing the file to build the deck from.
-func initFiveHand(file string) *FiveHand {
-	
+// param: j - Boolean representing the command line arg flag that will add TWO JOKERS to the deck of cards.
+// param: f - Boolean representing the command line arg flag specifies that the next command line argument is a handset file for testing.
+// param: s - Boolean representing the command line arg that turns on the statistics collection flag.
+// param: count - int representing the amount of times to collect statistics
+func initFiveHand(file string, j bool, s bool, count int) *FiveHand {
+	// initialize deck and hand array
 	var d = initDeck()
 	var h = make([]*Hand, 0)
 
+	// initializes 6 hands inside of the hand array
 	for i := 0; i < 6; i++ {
 		h = append(h, initHand())
 	}
 
 	if (file != "") { d.buildFileDeck(file) 
-	} else  { d.buildRandDeck() }
+	} else  { d.buildRandDeck(j) }
 
 	return &FiveHand {
 		deck : d,
 		hands : h,
+		j_Flag : j,
+		s_Flag : s,
+		s_Count : count,
 	}
 }
 
@@ -122,7 +134,35 @@ func (f *FiveHand) sortHands() {
 // Main Method Calls
 func main() {
 	f := ""
-	if (len(os.Args) > 1) { f = os.Args[1] }
-	game := initFiveHand(f)
+	j_Flag := false
+	s_Flag := false
+	s_Count := 0
+
+	if (len(os.Args) > 1) {
+
+		for i:=1; i < len(os.Args); i++ {
+
+			if (os.Args[i] == "-j") { // if Args[i] equals "-j", sets j_Flag to true
+				j_Flag = true
+
+			} else if (os.Args[i] == "-f") { // if Args[i] equals "-f", sets the file name Args[i + 1] and then increments i by 1
+				f = os.Args[i + 1]
+				i++
+
+			} else if (os.Args[i] == "-s") { // if Args[i] equals "-s", sets s_Flag to true
+				s_Flag = true
+				if (i + 1 < len(os.Args) && (os.Args[i + 1] != "-j" || os.Args[i + 1] != "-s")) { // if the next index is still in bounds and the next value of Args[i]
+																								  // != -j or -s, sets s_Count to Args[i + 1]
+					count, err := strconv.Atoi(os.Args[i + 1])
+					if err != nil {
+						fmt.Println("Error converting string to integer:", err)
+						return
+					}
+					s_Count = count
+				}
+			}
+		}
+	}
+	game := initFiveHand(f, j_Flag, s_Flag, s_Count)
 	game.play(f)
 }

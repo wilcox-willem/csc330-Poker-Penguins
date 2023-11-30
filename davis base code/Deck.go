@@ -54,7 +54,8 @@ func (d *Deck) toString() string {
 
 // Builds a random deck based on a standard deck of 52 playing cards without jokers.
 // Shuffles the deck to randomize the card order.
-func (d *Deck) buildRandDeck() {
+// param: j_Flag - Boolean representing if jokers should be added or not.
+func (d *Deck) buildRandDeck(j_Flag bool) {
 	d.deckType = 0
 
 	for suit := 0; suit <= 3; suit ++ {

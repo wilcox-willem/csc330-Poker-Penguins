@@ -22,10 +22,7 @@ type FiveHand struct {
 // If command line arguments are provided, it builds a file deck; otherwise, it builds a randomized deck.
 // param: file - String representing the file to build the deck from.
 // param: j - Boolean representing the command line arg flag that will add TWO JOKERS to the deck of cards.
-// param: f - Boolean representing the command line arg flag specifies that the next command line argument is a handset file for testing.
-// param: s - Boolean representing the command line arg that turns on the statistics collection flag.
-// param: count - int representing the amount of times to collect statistics
-func initFiveHand(file string, j bool, s bool, count int) *FiveHand {
+func initFiveHand(file string, j bool) *FiveHand {
 	// initialize deck and hand array
 	var d = initDeck()
 	var h = make([]*Hand, 0)
@@ -42,8 +39,6 @@ func initFiveHand(file string, j bool, s bool, count int) *FiveHand {
 		deck : d,
 		hands : h,
 		j_Flag : j,
-		s_Flag : s,
-		s_Count : count,
 	}
 }
 
@@ -130,17 +125,11 @@ func (f *FiveHand) sortHands() {
     }
 }
 
-////// WW: BEGIN - Stats mode functions,
-
-
-// Returns an int array, containing the
-// values of the players hands
-//
-// altered version of sortHands(), no sorting to speed
-// up run time (hopefully)
+// Returns an int array, containing the values of the player's hand
 func (f *FiveHand) handsStats() []int {
 	playerScores := make([]int, len(f.hands))
-	for i := 0; i < len(f.hands) - 1; i++ {
+
+	for i := 0; i < len(f.hands); i++ {
         f.hands[i].assessHand()
         playerScores[i] = f.hands[i].handType
     }
@@ -153,30 +142,25 @@ func (f *FiveHand) handsStats() []int {
 //
 // altered version of play(), collects values
 // of hand scores from each player via handsStats()
-func playStats(numSamples int) {
-	// default to 1000 inputs
-	if (numSamples == 0) {
-		numSamples = 1000
-	}
+func playStats(numSamples int, j_Flag bool) {
 
-	gameStats := make([]int, 10)
+	handStatList := make([]int64, 10) // array where each index represents RSF -> High Card
 
-	fmt.Println("\n---- STATISTICAL ANALYSIS ----\n") // 30 char long
-	for i := 0; i < numSamples - 1; i++ {
+	fmt.Println("\n---- STATISTICAL ANALYSIS ----\n")
 
-		game := initFiveHand("")
-		game.drawCards(0) // gameType 0 for rand mode
-		playerScores := game.handsStats()
+	for i := 0; i < numSamples; i++ {
+		game := initFiveHand("", j_Flag)
+		game.drawCards(0)
+
+		playerScores := game.handsStats()          // array storing the scores of each hand
 		
-		// update frequency of scores in gameStats
-		for i := 0; i < len(playerScores) - 1; i++ {
-			currentScore := playerScores[i] - 1
-			gameStats[currentScore]++
+		for i := 0; i < len(playerScores); i++ {
+			scoreIndex := playerScores[i] - 1      // i.e if player score = 10 -> index will be 9 -> which 
+			handStatList[scoreIndex]++             // is the last index of handStatList
 		}
-	
+
 	}
 	
-	// print results
 	handTitles := []string{
 		"HIGH CARD",
 		"PAIR",
@@ -191,18 +175,18 @@ func playStats(numSamples int) {
 
 	// prints RSF -> High Card
 	for i := len(handTitles) - 1; i > -1; i-- {
-		fmt.Printf("%-20s%10d\n", handTitles[i], gameStats[i]) // 30 char long
+		fmt.Printf("%-20s%10d\n", handTitles[i], handStatList[i])
 	}
-}
 
-////// WW: END
+	fmt.Println()
+}
 
 // Main Method Calls
 func main() {
 	f := ""
 	j_Flag := false
 	s_Flag := false
-	s_Count := 0
+	s_Count := 1000
 
 	if (len(os.Args) > 1) {
 
@@ -220,18 +204,23 @@ func main() {
 				if (i + 1 < len(os.Args) && (os.Args[i + 1] != "-j" || os.Args[i + 1] != "-s")) { // if the next index is still in bounds and the next value of Args[i]
 																								  // != -j or -s, sets s_Count to Args[i + 1]
 					count, err := strconv.Atoi(os.Args[i + 1])
+
 					if err != nil {
 						fmt.Println("Error converting string to integer:", err)
 						return
 					}
+					
 					s_Count = count
 				}
 			}
 		}
 	}
-	game := initFiveHand(f, j_Flag, s_Flag, s_Count)
-	game.play(f)
 
-	// WW: Test stats
-	playStats(166666667)
+	if (s_Flag) {
+		playStats(s_Count, j_Flag)
+
+	} else {
+		game := initFiveHand(f, j_Flag)
+		game.play(f)
+	}
 }

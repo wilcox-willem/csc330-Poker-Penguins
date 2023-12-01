@@ -8,7 +8,6 @@ import (
 
 // Represents the game of Five Hand, a poker game with 6 hands.
 // The game can be played with a randomized deck or a deck loaded from a file.
-// author: Davis Guest
 type FiveHand struct {
 	deck *Deck
 	hands []*Hand
@@ -193,6 +192,7 @@ func main() {
 		for i:=1; i < len(os.Args); i++ {
 
 			if (os.Args[i] == "-j") { // if Args[i] equals "-j", sets j_Flag to true
+			fmt.Println("here")
 				j_Flag = true
 
 			} else if (os.Args[i] == "-f") { // if Args[i] equals "-f", sets the file name Args[i + 1] and then increments i by 1

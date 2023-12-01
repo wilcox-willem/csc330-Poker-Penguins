@@ -6,7 +6,6 @@ import (
 
 // Represents a hand of playing cards.
 // This class defines a hand object that can hold a collection of card objects.
-// author: Davis Guest
 type Hand struct {
 	cards []*Card
 	sorted []*Card

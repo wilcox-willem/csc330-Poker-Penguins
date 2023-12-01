@@ -6,7 +6,6 @@ import (
 
 // Represents a playing card.
 // This struct defines a card object with a rank and suit.
-// author: Davis Guest
 type Card struct {
 	rank int
 	suit int
@@ -31,13 +30,16 @@ func (c *Card) toString() string {
 	if (c.suit == 0) {suitLabel = "D"
 	} else if (c.suit == 1) {suitLabel = "C"
 	} else if (c.suit == 2) {suitLabel = "H"
-	} else if (c.suit == 3) {suitLabel = "S"}
+	} else if (c.suit == 3) {suitLabel = "S"
+	} else if (c.suit == 4) {suitLabel = "R"
+	} else if (c.suit == 5) {suitLabel = "B"}
 
 	var face string
 	if (c.rank == 11) {face = "J"
 	} else if (c.rank == 12) {face = "Q"
 	} else if (c.rank == 13) {face = "K"
-	} else if (c.rank == 14) {face = "A"}
+	} else if (c.rank == 14) {face = "A"
+	} else if (c.rank == 15) {face = "X"}
 
 	if (face == "") {
 		return fmt.Sprintf("%d%s", c.rank, suitLabel)

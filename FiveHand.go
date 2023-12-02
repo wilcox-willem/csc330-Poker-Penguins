@@ -64,12 +64,16 @@ func (f *FiveHand) play(file string) {
 		fmt.Println( "\n*** ERROR - DUPLICATED CARD FOUND IN DECK ***\n" + "\n*** DUPLICATE: " + f.deck.duplicate.toString() + " ***\n")
 		return
 	}
-
 	f.drawCards(gameType)
+
+	// for i := 0; i < 6; i++ {
+	// 	f.hands[0].addCard(f.deck.drawCard())
+	// }
 
 	fmt.Println("\n*** Here are the six hands...")
 
 	f.printAllHands()
+	
 
 	if (gameType == 0) {
 		fmt.Println("\n*** Here is what remains in the deck...\n" + f.deck.toString())
@@ -192,7 +196,6 @@ func main() {
 		for i:=1; i < len(os.Args); i++ {
 
 			if (os.Args[i] == "-j") { // if Args[i] equals "-j", sets j_Flag to true
-			fmt.Println("here")
 				j_Flag = true
 
 			} else if (os.Args[i] == "-f") { // if Args[i] equals "-f", sets the file name Args[i + 1] and then increments i by 1

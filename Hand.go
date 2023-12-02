@@ -113,6 +113,27 @@ func (h *Hand) compareHelper(other *Hand, diff int, pass int) int {
 // - 2 for Pair
 // - 1 for High Card
 func (h *Hand) assessHand() {
+
+	count := 1
+	hasJoker := false
+
+	// checks to see if there is a joker in the hand
+	color := 0
+	for _, c := range h.cards {
+
+		if c.rank == 15 {
+			hasJoker = true
+			color = c.suit
+		}
+		
+	}
+
+	topScore := 0
+
+	availCards := generateAvailableCards(color)
+
+	for _, card
+
 	h.sortHand()
 
 	if (h.isRoyalStraightFlush()) { h.handType = 10
@@ -359,4 +380,40 @@ func (h *Hand) sortHand() {
 			}
 		}
 	}
+}
+
+
+// Generates an array to keep track of every card that can be used as a joker.
+func (h *Hand) generateAvailableCards(c int) []*Card {
+	availCards := make([]*Card, 0)
+
+	for suit := 0; suit <= 3; suit ++ {
+
+		// Optimization to end early if not the right color
+		if ((suit == 0 || suit == 2 ) && c == 4) ||	  // if red and suit is 0 or 2
+		   ((suit == 1 || suit == 3 ) && c == 5) {    // if black and suit is 1 or 3
+
+			for rank := 2; rank <= 14; rank ++ {
+
+				if (contains(h.cards, rank, suit)) {continue}
+				availeDeck = append(availCards, initCard(rank, suit))
+
+			}
+		}
+
+	}
+
+	return availCards
+
+}
+
+
+// Helper method to see if a certain card or rank r and suit s is inside of the array.
+func contains(cards []*Card, r int, s int) bool {
+	for _, c := range cards {
+		if c.rank == r && c.suit == s{
+			return true
+		}
+	}
+	return false
 }

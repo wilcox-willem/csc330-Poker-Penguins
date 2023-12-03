@@ -1,0 +1,6 @@
+ XB, AS, KS, JS,10S
+ XR, 9D, 8D, 7D, 6D
+ 4D, 4H, 4C, 7S, 5C
+ 7H, 2H, 7C, 4S, 2S
+ 2D, 6H, 6C, 6S, KD
+ QD, QH, QC, 5S, 10S

@@ -64,11 +64,8 @@ func (f *FiveHand) play(file string) {
 		fmt.Println( "\n*** ERROR - DUPLICATED CARD FOUND IN DECK ***\n" + "\n*** DUPLICATE: " + f.deck.duplicate.toString() + " ***\n")
 		return
 	}
-	f.drawCards(gameType)
 
-	// for i := 0; i < 6; i++ {
-	// 	f.hands[0].addCard(f.deck.drawCard())
-	// }
+	f.drawCards(gameType)
 
 	fmt.Println("\n*** Here are the six hands...")
 
@@ -145,13 +142,13 @@ func (f *FiveHand) handsStats() []int {
 //
 // altered version of play(), collects values
 // of hand scores from each player via handsStats()
-func playStats(numSamples int, j_Flag bool) {
+func playStats(numSamples int64, j_Flag bool) {
 
 	handStatList := make([]int64, 10) // array where each index represents RSF -> High Card
 
 	fmt.Println("\n---- STATISTICAL ANALYSIS ----\n")
 
-	for i := 0; i < numSamples; i++ {
+	for i := int64(0); i < numSamples; i++ {
 		game := initFiveHand("", j_Flag)
 		game.drawCards(0)
 
@@ -163,6 +160,7 @@ func playStats(numSamples int, j_Flag bool) {
 		}
 
 	}
+	fmt.Println("here")
 	
 	handTitles := []string{
 		"HIGH CARD",
@@ -189,7 +187,7 @@ func main() {
 	f := ""
 	j_Flag := false
 	s_Flag := false
-	s_Count := 1000
+	var s_Count int64 = 1000
 
 	if (len(os.Args) > 1) {
 
@@ -213,7 +211,7 @@ func main() {
 						return
 					}
 					
-					s_Count = count
+					s_Count = int64(count)
 				}
 			}
 		}

@@ -114,38 +114,94 @@ func (h *Hand) compareHelper(other *Hand, diff int, pass int) int {
 // - 1 for High Card
 func (h *Hand) assessHand() {
 
-	count := 1
-	hasJoker := false
+	jokerIndex1 := -1
+	jokerIndex2 := -1
+
+	jokerSuit1 := 0
+	jokerSuit2 := 0
+
+	availCards1 := make([]*Card, 1)
+	availCards2 := make([]*Card, 1)
 
 	// checks to see if there is a joker in the hand
-	color := 0
-	for _, c := range h.cards {
+	for i, c := range h.cards {
 
-		if c.rank == 15 {
-			hasJoker = true
-			color = c.suit
+		if c.rank == 15 { // hand has a joker
+			if jokerIndex1 == -1 {
+				jokerIndex1 = i
+				availCards1 = h.generateAvailableCards(c.suit)
+				jokerSuit1 = c.suit
+
+			} else {
+				jokerIndex2 = i
+				availCards2 = h.generateAvailableCards(c.suit)
+				jokerSuit2 = c.suit
+				break
+			}
 		}
-		
+
 	}
 
 	topScore := 0
+	topSorted := h.sorted
+	currScore := 0
 
-	availCards := generateAvailableCards(color)
+	if jokerIndex1 != -1 {
+		for _, c1 := range availCards1 {
 
-	for _, card
+			for _, c2 := range availCards2 {
+				h.cards[jokerIndex1] = initCard(c1.rank, c1.suit)
 
-	h.sortHand()
+				if jokerIndex2 != -1 {
+					h.cards[jokerIndex2] = initCard(c2.rank, c2.suit)
+				}
 
-	if (h.isRoyalStraightFlush()) { h.handType = 10
-	} else if (h.isStraightFlush()) { h.handType = 9
-	} else if (h.isFourOfAKind()) { h.handType = 8
-	} else if (h.isFullHouse()) { h.handType = 7
-	} else if (h.isFlush()) { h.handType = 6
-	} else if (h.isStraight()) { h.handType = 5
-	} else if (h.isThreeOfAKind()) { h.handType = 4
-	} else if (h.isTwoPair()) { h.handType = 3
-	} else if (h.isPair()) { h.handType = 2
-	} else { h.handType = 1 }
+				h.sortHand()
+
+				if (h.isRoyalStraightFlush()) { currScore = 10
+				} else if (h.isStraightFlush()) { currScore = 9
+				} else if (h.isFourOfAKind()) { currScore = 8
+				} else if (h.isFullHouse()) { currScore = 7
+				} else if (h.isFlush()) { currScore = 6
+				} else if (h.isStraight()) { currScore = 5
+				} else if (h.isThreeOfAKind()) { currScore = 4
+				} else if (h.isTwoPair()) { currScore = 3
+				} else if (h.isPair()) { currScore = 2
+				} else { currScore = 1 }
+
+				h.cards[jokerIndex1] = initCard(15, jokerSuit1)
+				if jokerIndex2 != -1 {
+					h.cards[jokerIndex2] = initCard(15, jokerSuit2)
+				}
+
+				if currScore > topScore {
+					topScore = currScore 
+					topSorted = h.sorted
+				}
+			}
+		}
+
+		h.handType = topScore
+		h.sorted = topSorted
+
+	} else {
+
+		h.sortHand()
+
+		if (h.isRoyalStraightFlush()) { h.handType = 10
+		} else if (h.isStraightFlush()) { h.handType = 9
+		} else if (h.isFourOfAKind()) { h.handType = 8
+		} else if (h.isFullHouse()) { h.handType = 7
+		} else if (h.isFlush()) { h.handType = 6
+		} else if (h.isStraight()) { h.handType = 5
+		} else if (h.isThreeOfAKind()) { h.handType = 4
+		} else if (h.isTwoPair()) { h.handType = 3
+		} else if (h.isPair()) { h.handType = 2
+		} else { h.handType = 1 }
+	
+	}
+
+	
 }
 
 
@@ -366,7 +422,7 @@ func (h *Hand) getKicker() *Card {
 
 // Sets the sorted instance variable to a sorted version of a provided hand.
 func (h *Hand) sortHand() {
-
+	h.sorted = make([]*Card, 0)
 	for i := 0; i < 5; i++ {
 		h.sorted = append(h.sorted, initCard(h.cards[i].rank, h.cards[i].suit))
 	}
@@ -396,7 +452,7 @@ func (h *Hand) generateAvailableCards(c int) []*Card {
 			for rank := 2; rank <= 14; rank ++ {
 
 				if (contains(h.cards, rank, suit)) {continue}
-				availeDeck = append(availCards, initCard(rank, suit))
+				availCards = append(availCards, initCard(rank, suit))
 
 			}
 		}

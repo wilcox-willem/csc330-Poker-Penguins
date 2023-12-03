@@ -6,7 +6,6 @@ import (
 
 // Represents a hand of playing cards.
 // This class defines a hand object that can hold a collection of card objects.
-// author: Davis Guest
 type Hand struct {
 	cards []*Card
 	sorted []*Card
@@ -114,18 +113,95 @@ func (h *Hand) compareHelper(other *Hand, diff int, pass int) int {
 // - 2 for Pair
 // - 1 for High Card
 func (h *Hand) assessHand() {
-	h.sortHand()
 
-	if (h.isRoyalStraightFlush()) { h.handType = 10
-	} else if (h.isStraightFlush()) { h.handType = 9
-	} else if (h.isFourOfAKind()) { h.handType = 8
-	} else if (h.isFullHouse()) { h.handType = 7
-	} else if (h.isFlush()) { h.handType = 6
-	} else if (h.isStraight()) { h.handType = 5
-	} else if (h.isThreeOfAKind()) { h.handType = 4
-	} else if (h.isTwoPair()) { h.handType = 3
-	} else if (h.isPair()) { h.handType = 2
-	} else { h.handType = 1 }
+	jokerIndex1 := -1
+	jokerIndex2 := -1
+
+	jokerSuit1 := 0
+	jokerSuit2 := 0
+
+	availCards1 := make([]*Card, 1)
+	availCards2 := make([]*Card, 1)
+
+	// checks to see if there is a joker in the hand
+	for i, c := range h.cards {
+
+		if c.rank == 15 { // hand has a joker
+			if jokerIndex1 == -1 {
+				jokerIndex1 = i
+				availCards1 = h.generateAvailableCards(c.suit)
+				jokerSuit1 = c.suit
+
+			} else {
+				jokerIndex2 = i
+				availCards2 = h.generateAvailableCards(c.suit)
+				jokerSuit2 = c.suit
+				break
+			}
+		}
+
+	}
+
+	topScore := 0
+	topSorted := h.sorted
+	currScore := 0
+
+	if jokerIndex1 != -1 {
+		for _, c1 := range availCards1 {
+
+			for _, c2 := range availCards2 {
+				h.cards[jokerIndex1] = initCard(c1.rank, c1.suit)
+
+				if jokerIndex2 != -1 {
+					h.cards[jokerIndex2] = initCard(c2.rank, c2.suit)
+				}
+
+				h.sortHand()
+
+				if (h.isRoyalStraightFlush()) { currScore = 10
+				} else if (h.isStraightFlush()) { currScore = 9
+				} else if (h.isFourOfAKind()) { currScore = 8
+				} else if (h.isFullHouse()) { currScore = 7
+				} else if (h.isFlush()) { currScore = 6
+				} else if (h.isStraight()) { currScore = 5
+				} else if (h.isThreeOfAKind()) { currScore = 4
+				} else if (h.isTwoPair()) { currScore = 3
+				} else if (h.isPair()) { currScore = 2
+				} else { currScore = 1 }
+
+				h.cards[jokerIndex1] = initCard(15, jokerSuit1)
+				if jokerIndex2 != -1 {
+					h.cards[jokerIndex2] = initCard(15, jokerSuit2)
+				}
+
+				if currScore > topScore {
+					topScore = currScore 
+					topSorted = h.sorted
+				}
+			}
+		}
+
+		h.handType = topScore
+		h.sorted = topSorted
+
+	} else {
+
+		h.sortHand()
+
+		if (h.isRoyalStraightFlush()) { h.handType = 10
+		} else if (h.isStraightFlush()) { h.handType = 9
+		} else if (h.isFourOfAKind()) { h.handType = 8
+		} else if (h.isFullHouse()) { h.handType = 7
+		} else if (h.isFlush()) { h.handType = 6
+		} else if (h.isStraight()) { h.handType = 5
+		} else if (h.isThreeOfAKind()) { h.handType = 4
+		} else if (h.isTwoPair()) { h.handType = 3
+		} else if (h.isPair()) { h.handType = 2
+		} else { h.handType = 1 }
+	
+	}
+
+	
 }
 
 
@@ -346,7 +422,7 @@ func (h *Hand) getKicker() *Card {
 
 // Sets the sorted instance variable to a sorted version of a provided hand.
 func (h *Hand) sortHand() {
-
+	h.sorted = make([]*Card, 0)
 	for i := 0; i < 5; i++ {
 		h.sorted = append(h.sorted, initCard(h.cards[i].rank, h.cards[i].suit))
 	}
@@ -360,4 +436,40 @@ func (h *Hand) sortHand() {
 			}
 		}
 	}
+}
+
+
+// Generates an array to keep track of every card that can be used as a joker.
+func (h *Hand) generateAvailableCards(c int) []*Card {
+	availCards := make([]*Card, 0)
+
+	for suit := 0; suit <= 3; suit ++ {
+
+		// Optimization to end early if not the right color
+		if ((suit == 0 || suit == 2 ) && c == 4) ||	  // if red and suit is 0 or 2
+		   ((suit == 1 || suit == 3 ) && c == 5) {    // if black and suit is 1 or 3
+
+			for rank := 2; rank <= 14; rank ++ {
+
+				if (contains(h.cards, rank, suit)) {continue}
+				availCards = append(availCards, initCard(rank, suit))
+
+			}
+		}
+
+	}
+
+	return availCards
+
+}
+
+
+// Helper method to see if a certain card or rank r and suit s is inside of the array.
+func contains(cards []*Card, r int, s int) bool {
+	for _, c := range cards {
+		if c.rank == r && c.suit == s{
+			return true
+		}
+	}
+	return false
 }

@@ -8,7 +8,6 @@ import (
 
 // Represents the game of Five Hand, a poker game with 6 hands.
 // The game can be played with a randomized deck or a deck loaded from a file.
-// author: Davis Guest
 type FiveHand struct {
 	deck *Deck
 	hands []*Hand
@@ -71,6 +70,7 @@ func (f *FiveHand) play(file string) {
 	fmt.Println("\n*** Here are the six hands...")
 
 	f.printAllHands()
+	
 
 	if (gameType == 0) {
 		fmt.Println("\n*** Here is what remains in the deck...\n" + f.deck.toString())
@@ -142,13 +142,13 @@ func (f *FiveHand) handsStats() []int {
 //
 // altered version of play(), collects values
 // of hand scores from each player via handsStats()
-func playStats(numSamples int, j_Flag bool) {
+func playStats(numSamples int64, j_Flag bool) {
 
 	handStatList := make([]int64, 10) // array where each index represents RSF -> High Card
 
 	fmt.Println("\n---- STATISTICAL ANALYSIS ----\n")
 
-	for i := 0; i < numSamples; i++ {
+	for i := int64(0); i < numSamples; i++ {
 		game := initFiveHand("", j_Flag)
 		game.drawCards(0)
 
@@ -160,6 +160,7 @@ func playStats(numSamples int, j_Flag bool) {
 		}
 
 	}
+	fmt.Println("here")
 	
 	handTitles := []string{
 		"HIGH CARD",
@@ -186,7 +187,7 @@ func main() {
 	f := ""
 	j_Flag := false
 	s_Flag := false
-	s_Count := 1000
+	var s_Count int64 = 1000
 
 	if (len(os.Args) > 1) {
 
@@ -210,7 +211,7 @@ func main() {
 						return
 					}
 					
-					s_Count = count
+					s_Count = int64(count)
 				}
 			}
 		}

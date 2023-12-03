@@ -8,10 +8,9 @@ import (
 	"strings"
 )
 
-// Representing a collection of a set of standard 52 playing cards, without a Joker.
-// This class allows you to build a deck either randomly or from a file and provides
-// methods to draw cards from the deck.
-// author: Davis Guest
+// Representing a collection of a set of standard 52 playing cards, with the possibility of
+// 2 Jokers if set. This class allows you to build a deck either randomly or from a file and
+// provides methods to draw cards from the deck.
 type Deck struct {
 	cards []*Card
 	duplicate *Card
@@ -64,6 +63,12 @@ func (d *Deck) buildRandDeck(j_Flag bool) {
 		}
 	}
 
+	// if j_Flag is toggeled, adds 2 Joker cards.
+	if (j_Flag) {
+		d.cards = append(d.cards, initCard(15, 4))
+		d.cards = append(d.cards, initCard(15, 5))
+	}
+
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(d.cards), func(i, j int) {
         d.cards[i], d.cards[j] = d.cards[j], d.cards[i]
@@ -94,6 +99,7 @@ func (d *Deck) buildFileDeck(file string) error {
 			} else if s[i] == 'Q' { rank = 12
 			} else if s[i] == 'K' { rank = 13
 			} else if s[i] == 'A' { rank = 14
+			} else if s[i] == 'X' { rank = 15
 			} else {
 				val, err := strconv.Atoi(string(s[i]))
 				if err != nil { return err }
@@ -105,6 +111,8 @@ func (d *Deck) buildFileDeck(file string) error {
 			} else if s[2] == 'C' { suit = 1
 			} else if s[2] == 'H' { suit = 2
 			} else if s[2] == 'S' { suit = 3
+			} else if s[2] == 'R' { suit = 4
+			} else if s[2] == 'B' { suit = 5
 			}
 
 			for _, card := range d.cards {

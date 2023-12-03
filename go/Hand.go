@@ -101,19 +101,9 @@ func (h *Hand) compareHelper(other *Hand, diff int, pass int) int {
 
 // Analyzes the current collection of cards in the hand and determines its hand type.
 // The sorted instance variable is updated to contain the cards sorted by rank.
-// This method sets the hand_type instance variable to one of the predefined hand types:
-// - 10 for Royal Straight Flush
-// - 9 for Straight Flush
-// - 8 for Four of a Kind
-// - 7 for Full House
-// - 6 for Flush
-// - 5 for Straight
-// - 4 for Three of a Kind
-// - 3 for Two Pair
-// - 2 for Pair
-// - 1 for High Card
 func (h *Hand) assessHand() {
 
+	// Initializes variables used in Joker assessment
 	jokerIndex1 := -1
 	jokerIndex2 := -1
 
@@ -121,9 +111,9 @@ func (h *Hand) assessHand() {
 	jokerSuit2 := 0
 
 	availCards1 := make([]*Card, 1)
-	availCards2 := make([]*Card, 1)
+	availCards2 := make([]*Card, 1) // Must have length 1 in order for the joker to be processed
 
-	// checks to see if there is a joker in the hand
+	// Checks to see if there is a joker in the hand
 	for i, c := range h.cards {
 
 		if c.rank == 15 { // hand has a joker
@@ -132,7 +122,7 @@ func (h *Hand) assessHand() {
 				availCards1 = h.generateAvailableCards(c.suit)
 				jokerSuit1 = c.suit
 
-			} else {
+			} else { // hand has a second joker
 				jokerIndex2 = i
 				availCards2 = h.generateAvailableCards(c.suit)
 				jokerSuit2 = c.suit
@@ -142,18 +132,23 @@ func (h *Hand) assessHand() {
 
 	}
 
-	topScore := 0
-	topSorted := h.sorted
+	topScore := 0          // Highest hand rank generated from the different possibility of joker substitutions
+	topSorted := h.sorted  // Keeps track of the sorted version for the highest ranking hand possibility
+						   // 	if not kept track of, the instance of the highest version is written over
+						   //   (it cannot end early as there is a possibility of a better hand after)
 	currScore := 0
 
-	if jokerIndex1 != -1 {
-		for _, c1 := range availCards1 {
+	if jokerIndex1 != -1 { // if there is no joker
 
-			for _, c2 := range availCards2 {
-				h.cards[jokerIndex1] = initCard(c1.rank, c1.suit)
+		for _, c1 := range availCards1 { // for every card in joker1 possibilities
 
-				if jokerIndex2 != -1 {
-					h.cards[jokerIndex2] = initCard(c2.rank, c2.suit)
+			for _, c2 := range availCards2 { // for every card in joker2 possibilities
+											 // (the reason the initialization of availCards2 needs to be 1)
+
+				h.cards[jokerIndex1] = initCard(c1.rank, c1.suit) // sets the joker1 card of the hand to the current possibility
+
+				if jokerIndex2 != -1 { // if there is a joker2
+					h.cards[jokerIndex2] = initCard(c2.rank, c2.suit) // sets the joker2 card of the hand to the current possibility
 				}
 
 				h.sortHand()
@@ -169,8 +164,10 @@ func (h *Hand) assessHand() {
 				} else if (h.isPair()) { currScore = 2
 				} else { currScore = 1 }
 
-				h.cards[jokerIndex1] = initCard(15, jokerSuit1)
-				if jokerIndex2 != -1 {
+				h.cards[jokerIndex1] = initCard(15, jokerSuit1) // sets the joker1 card back to its original value
+															    // (this has to happen for the correct hand printing)
+
+				if jokerIndex2 != -1 { // sets the joker2 card back to its original value
 					h.cards[jokerIndex2] = initCard(15, jokerSuit2)
 				}
 
@@ -181,10 +178,11 @@ func (h *Hand) assessHand() {
 			}
 		}
 
+		// After all possibile assessments, sets the hand's handType and sorted array to the highest possible values
 		h.handType = topScore
 		h.sorted = topSorted
 
-	} else {
+	} else { // normal hand evaluation
 
 		h.sortHand()
 
@@ -464,7 +462,7 @@ func (h *Hand) generateAvailableCards(c int) []*Card {
 }
 
 
-// Helper method to see if a certain card or rank r and suit s is inside of the array.
+// Helper method to see if a certain card of rank r and suit s is inside the array.
 func contains(cards []*Card, r int, s int) bool {
 	for _, c := range cards {
 		if c.rank == r && c.suit == s{

@@ -1,58 +1,65 @@
-README
+# Project: FCSPHA - Jokers Wild and Statistical Improvement
 
-Dec 2023, CSC330, Dr. Pounds, Mercer University
+## Description
+Just like previous two iterations of the project, this card game immitates a special version of poker called Five Card Stud. This game does not allow for the splitting of the pot or ties. There is a clear winner each time depending on the hand's type, high card, and suit. There is no "draw phase" either, a randomized deck is looped through giving 1 card to one of six hands at a time (unless using a file input test deck). In this version, there is the abiility to add 2 jokers to the deck.
 
-Project: FCSPHA - Jokers Wild and Statistical Improvement
-Group Name: Poker Penguins
-Members:
-	Davis Guest
-	Dirk Kotze
-	Philomina Ekezie
-	Shruti Senthil
-	Willem Wilcox
+## Game Flags
+There are three variations for this project that can be initiated by the following command line arguements. If no arguements are present, a normal randomized game is run.
+
+**FLAGS ARE CASE SENSITIVE**
+
+### -j
+This command line arguements adds two jokers to the randomized deck. These will have face designation X and suit designation either R or B. So the red joker would be XR and the black joker would be XB. Jokers are wild and can take on ANY CARD identity except for those found in the current hand. In other words, a given hand cannot have two of the same card.
+
+### -f { filename }
+This command line argument specifies that the next command line argument is a handset file for
+testing. The ability to have two jokers in the handsets is possible. Files must have the following formatting:
+
+* Space before all cards ranks/faces except for 10 (including the first card per line)
+* Capital suit labels
+* Comma after each suit except for the last card per line
 
 
----------------------------------------------------------------
-EDITING NOTES:
-	Any line with a "// " is a comment where something
-	above it needs editing later. -WW
----------------------------------------------------------------
-| Build Instructions |
+### -s { count }
+This command line arguement turns on the statistics collection flag. If there is a second command line argument then it
+specifies the number of samples to run. So running with ”-s 1000” would run your program 1000 time
+generating 6000 poker hand. If no count is specified, a default 1000 runs will occur.
 
-	To build an executable, use the following command
-	"go build -o PHA Card.go Deck.go FiveHand.go Hand.go"
-// If any of the file structure changes
+## Build Instructions
+To build an executable in Go, use the following command:
 
-	To run, use the following
-	"PHA"
-// 	PHA (poker hand analyzer) can be replaced
-//	with a different name if anyone would like
+* go build -o {name of your choosing} Card.go Deck.go FiveHand.go Hand.go
 
-| Default Mode |
+For example:
 
-	By default, the program runs a game of five card stud poker with 6 hands
-	then displays the players in winning order (w/ tie-breaking).
+* go build -o **Poker** Card.go Deck.go FiveHand.go Hand.go
 
-| Test File Mode |
+To run the executable for the different modes, type the following and press enter:
 
-	By adding a file path after 
-// With the addition of the "-f" flag, will this still work?
+* {executable} -j
 
-| Features and Flags |
+* {executable} -s
+* {executable} -s {number}
 
-	By using various flags, the actions of the program can be changed. 
-	They are listed below as, |flag| then a description of what it does.
+* {executable} -s -f
+* {executable} -s {number} -f
 
-	|-j| Adds two wild jokers to the deck, a red (XR) and a 
-		 black (XB). The jokers can be any card, except those within 
-		 their hand. Futhermore, the jokers will become the card that
-		 maximizes its hand's score.
+* {executable} -f {file name}
 
-	|-f| Specifies that the next command line argument is a
-		 handset file (handset files can include jokers)
+**The order in which -s and -f does not matter, its just the number of steps after -s must come after**
 
-	|-s #| This flag turns on statistical collection, where # is the number
-		 of time the program will run. If no number is listed, it will run
-		 1000 times by default. Furthermore, once the program completes it
-		 will print the number of times of each hand ranking made. 
-		 Finally, this flag can be used with the "-j" flag.
+
+## Extra Credit: ADA - Compilation Instructions
+
+Insert compilation instructions for the ADA files.
+
+## Authors
+Group: Poker Penguins
+
+* Philomina Ekezie
+* Dirk Kotze
+* Davis Guest
+* Shruti Senthil
+* Willem Wilcox
+
+Dec 2023, CSC 330, Dr. Pounds, Mercer University

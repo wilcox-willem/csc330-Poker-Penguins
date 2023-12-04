@@ -202,7 +202,7 @@ func main() {
 
 			} else if (os.Args[i] == "-s") { // if Args[i] equals "-s", sets s_Flag to true
 				s_Flag = true
-				if (i + 1 < len(os.Args) && (os.Args[i + 1] != "-j" || os.Args[i + 1] != "-s")) { // if the next index is still in bounds and the next value of Args[i]
+				if (i + 1 < len(os.Args) && os.Args[i + 1] != "-j") { // if the next index is still in bounds and the next value of Args[i]
 																								  // != -j or -s, sets s_Count to Args[i + 1]
 					count, err := strconv.Atoi(os.Args[i + 1])
 

@@ -69,6 +69,7 @@ func (d *Deck) buildRandDeck(j_Flag bool) {
 		d.cards = append(d.cards, initCard(15, 5))
 	}
 
+	// shuffles the deck
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(d.cards), func(i, j int) {
         d.cards[i], d.cards[j] = d.cards[j], d.cards[i]

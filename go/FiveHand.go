@@ -162,6 +162,7 @@ func playStats(numSamples int64, j_Flag bool) {
 	}
 	fmt.Println("here")
 	
+	// setting up hand titles into an array of string for easier access
 	handTitles := []string{
 		"HIGH CARD",
 		"PAIR",

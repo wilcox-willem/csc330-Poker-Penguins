@@ -1,4 +1,4 @@
-# Project: FCSPHA - Jokers Wild and Statistical Improvement
+# Project 4 - Five Card Stud - Jokers and Statistical Improvements
 
 ## Description
 Just like previous two iterations of the project, this card game immitates a special version of poker called Five Card Stud. This game does not allow for the splitting of the pot or ties. There is a clear winner each time depending on the hand's type, high card, and suit. There is no "draw phase" either, a randomized deck is looped through giving 1 card to one of six hands at a time (unless using a file input test deck). In this version, there is the abiility to add 2 jokers to the deck.

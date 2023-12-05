@@ -132,88 +132,116 @@ package body Hand is
 
 
 
-    --  function isRSF(h : Hand) return Boolean is
+    function isRSF(h : Hand) return Boolean is
+        rankList : Integer_Array := getRankList(h);
+    begin
 
-    --  begin
-
-    --  return null;
+        return isSF(h) and rankList(1) = 10 and rankList(5) = 14;
     
-    --  end isRSF;
+    end isRSF;
 
 
 
-    --  function isSF(h : Hand) return Boolean is
+    function isSF(h : Hand) return Boolean is
+    begin
 
-    --  begin
-
-    --  return null;
+        return isS(h) and isF(h);
     
-    --  end isSF;
+    end isSF;
 
 
 
-    --  function isFOAK(h : Hand) return Boolean is
+    function isFOAK(h : Hand) return Boolean is
+        rankList : Integer_Array := getRankList(h);
+    begin
 
-    --  begin
-
-    --  return null;
+        return (rankList(1) = rankList(4)) || (rankList(2) = rankList(5));
     
-    --  end isFOAK;
+    end isFOAK;
 
 
 
-    --  function isFH(h : Hand) return Boolean is
+    function isFH(h : Hand) return Boolean is
+        rankList : Integer_Array := getRankList(h);
+    begin
 
-    --  begin
-
-    --  return null;
+        return (rankList(1) = rankList(2)) and (rankList(3) = rankList(5)) or
+               (rankList(1) = rankList(3)) and (rankList(4) = rankList(5));
     
-    --  end isFH;
+    end isFH;
 
 
 
-    --  function isF(h : Hand) return Boolean is
+    function isF(h : Hand) return Boolean is
+        suit : Integer := h.sorted(1).suit;
+    begin
 
-    --  begin
+        for i in 1..4 loop
+            if (h.sorted(i).suit /= suit) then
+                return false;
+            end if;
+        end loop;
 
-    --  return null;
+        return h.sorted(5).suit = suit;
     
-    --  end isF;
+    end isF;
 
 
 
-    --  function isS(h : Hand) return Boolean is
+    function isS(h : Hand) return Boolean is
+        rankList : Integer_Array := getRankList(h);
+    begin
 
-    --  begin
+        if (rankList(5) = 14 and rankList(1) = 2) then
+            rankList(5) := 1;
+            for j in 1 .. 4 loop
+                for i in 1 .. 4 loop
+                    if rankList(i) - rankList(i + 1) > 0 then
+                        temp := rankList(i + 1);
+                        rankList(i + 1) := rankList(i);
+                        rankList(i) := temp;
+                    end if;
+                end loop;
+            end loop;
+        end if;
 
-    --  return null;
+        for i in 1..4 loop
+            if (rankList(i + 1) /= rankList(i) + 1) then
+                return false;
+            end if;
+        end loop;
     
-    --  end isS;
+        return true;
+    end isS;
 
 
 
-    --  function isTOAK(h : Hand) return Boolean is
+    function isTOAK(h : Hand) return Boolean is
+        rankList : Integer_Array := getRankList(h);
+    begin
 
-    --  begin
-
-    --  return null;
+        return (rankList[1] = rankList[3]) or
+               (rankList[2] = rankList[4]) or
+               (rankList[3] = rankList[5]);
     
-    --  end isTOAK;
+    end isTOAK;
 
 
 
-    --  function isTP(h : Hand) return Boolean is
+    function isTP(h : Hand) return Boolean is
+        rankList : Integer_Array := getRankList(h);
+    begin
 
-    --  begin
-
-    --  return null;
+        return (rankList[1] = rankList[2] and rankList[3] = rankList[4]) or
+		       (rankList[1] = rankList[2] and rankList[4] = rankList[5]) or
+		       (rankList[2] = rankList[3] and rankList[4] = rankList[5]);
     
-    --  end isTP;
+    end isTP;
 
 
 
     --  function isP(h : Hand) return Boolean is
-
+    -- rankList : Integer_Array := getRankList(h);
     --  begin
 
     --  return null;
@@ -408,73 +436,76 @@ package body Hand is
         
     begin
 
-    for i in h.cards'Range loop
-        if (h.cards(i).rank = 15) then
-            jokerIndex1 := i;
-            jokerSuit1 := h.cards(i).suit;
-            availCards1 := h.generateAvailableCards(jokerSuit1);
-        else
-            jokerIndex2 := i;
-            jokerSuit2 := h.cards(i).suit;
-            availCards2 := h.generateAvailableCards(jokerSuit2);
-            exit;
-        end if;
-    end loop;
-
-    if (jokerIndex1 /= -1) then
-        for i in availCards1'Range loop
-            for j in availCards2'Range loop
-                h.cards(jokerIndex1) := Init_Card(h.cards(i).rank, h.cards(i).suit);
-
-                if (jokerIndex2 /= -1) then
-                    h.cards(jokerIndex2) := Init_Card(h.cards(j).rank, h.cards(j).suit);
-                end if;
-
-                sortHand(h);
-
-                if (isRSF(h)) then currScore := 10;
-                elsif (isSF(h)) then currScore := 9;
-                elsif (isFOAK(h)) then currScore := 8;
-                elsif (isFH(h)) then currScore := 7;
-                elsif (isF(h)) then currScore := 6;
-                elsif (isS(h)) then currScore := 5;
-                elsif (isTOAK(h)) then currScore := 4;
-                elsif (isTP(h)) then currScore := 3;
-                elsif (isP(h)) then currScore := 2;
-                else currScore := 1;
-                end if;
-
-                h.cards(jokerIndex1) := Init_Card(15, jokerSuit1);
-
-                if (jokerIndex2 /= -1) then
-                    h.cards(jokerIndex2) := Init_Card(15, jokerSuit2);
-                end if;
-
-                if (currScore > topScore) then
-                    topScore := currScore;
-                    topSorted := h.sorted;
-                end if;
-
-            end loop;
+        for i in h.cards'Range loop
+            if (h.cards(i).rank = 15) then
+                jokerIndex1 := i;
+                jokerSuit1 := h.cards(i).suit;
+                availCards1 := h.generateAvailableCards(jokerSuit1);
+            else
+                jokerIndex2 := i;
+                jokerSuit2 := h.cards(i).suit;
+                availCards2 := h.generateAvailableCards(jokerSuit2);
+                exit;
+            end if;
         end loop;
 
-        h.handType := topScore;
-        h.sorted := topSorted;
-    else
-        sortHand(h);
+        if (jokerIndex1 /= -1) then
+            for i in availCards1'Range loop
+                for j in availCards2'Range loop
+                    h.cards(jokerIndex1) := Init_Card(h.cards(i).rank, h.cards(i).suit);
 
-        if (isRSF(h)) then h.handType := 10;
-        elsif (isSF(h)) then h.handType := 9;
-        elsif (isFOAK(h)) then h.handType := 8;
-        elsif (isFH(h)) then h.handType := 7;
-        elsif (isF(h)) then h.handType := 6;
-        elsif (isS(h)) then h.handType := 5;
-        elsif (isTOAK(h)) then h.handType := 4;
-        elsif (isTP(h)) then h.handType := 3;
-        elsif (isP(h)) then h.handType := 2;
-        else h.handType := 1;
+                    if (jokerIndex2 /= -1) then
+                        h.cards(jokerIndex2) := Init_Card(h.cards(j).rank, h.cards(j).suit);
+                    end if;
+
+                    sortHand(h);
+
+                    if (isRSF(h)) then currScore := 10;
+                    elsif (isSF(h)) then currScore := 9;
+                    elsif (isFOAK(h)) then currScore := 8;
+                    elsif (isFH(h)) then currScore := 7;
+                    elsif (isF(h)) then currScore := 6;
+                    elsif (isS(h)) then currScore := 5;
+                    elsif (isTOAK(h)) then currScore := 4;
+                    elsif (isTP(h)) then currScore := 3;
+                    elsif (isP(h)) then currScore := 2;
+                    else currScore := 1;
+                    end if;
+
+                    h.cards(jokerIndex1) := Init_Card(15, jokerSuit1);
+
+                    if (jokerIndex2 /= -1) then
+                        h.cards(jokerIndex2) := Init_Card(15, jokerSuit2);
+                    end if;
+
+                    if (currScore > topScore) then
+                        topScore := currScore;
+                        topSorted := h.sorted;
+                    end if;
+
+                    if (jokerIndex2 = -1) then
+                        exit;
+                    end if;
+                end loop;
+            end loop;
+
+            h.handType := topScore;
+            h.sorted := topSorted;
+        else
+            sortHand(h);
+
+            if (isRSF(h)) then h.handType := 10;
+            elsif (isSF(h)) then h.handType := 9;
+            elsif (isFOAK(h)) then h.handType := 8;
+            elsif (isFH(h)) then h.handType := 7;
+            elsif (isF(h)) then h.handType := 6;
+            elsif (isS(h)) then h.handType := 5;
+            elsif (isTOAK(h)) then h.handType := 4;
+            elsif (isTP(h)) then h.handType := 3;
+            elsif (isP(h)) then h.handType := 2;
+            else h.handType := 1;
+            end if;
         end if;
-    end if;
 
     end assessHand;
 
@@ -495,10 +526,27 @@ package body Hand is
 
 
 
-    --  --  procedure sortHand(h : Hand) is
+    procedure sortHand(h: in out Hand) is
 
-    --  --  begin
+       Temp: Card.Card;
 
-    --  --  end sortHand;
+    begin
+    
+       for I in h.Cards'Range loop
+          h.Sorted(I) := Init_Card(h.Cards(I).rank, h.Cards(I).suit);
+       end loop;
+    
+       for J in 1 .. 4 loop
+          for I in 1 .. 4 loop
+             if Compare_Card(h.Sorted(I), h.Sorted(I + 1)) > 0 then 
+                Temp := Init_Card(h.Sorted(I + 1).rank, h.Sorted(I + 1).suit);
+                h.Sorted(I + 1) := h.Sorted(I);
+                h.Sorted(I) := Temp;
+             end if;
+          end loop;
+       end loop;
+
+    end sortHand;
+
 
 end Hand;

@@ -34,7 +34,7 @@ package Hand is
 
     procedure assessHand(h : in out Hand);
     procedure Add_Card(h : in out Hand; c : Card.Card);
-    --  procedure sortHand(h : Hand);
+    procedure sortHand(h : in out Hand);
 
 
 end Hand;

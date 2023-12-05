@@ -57,7 +57,7 @@ However, to complile Ada into an executable, type the following and press enter:
 
 To run the executable, type the following and press enter:
 
-* main
+* main {arg flags}
 
 ## Authors
 Group: Poker Penguins

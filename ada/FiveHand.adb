@@ -12,9 +12,8 @@ package body FiveHand is
     -- function names from Go
     -- STILL NEEDS IMPLEMENTING
     function Init_Five_Hand (file : String; j_Flag : Boolean) return FiveHand is
-        d : Deck := Init_Deck();
-        h : Hands -- hand array;
-
+        d : Deck := Init_Deck(Deck);
+        h : Hands;-- hand array
     begin
        -- Initialize 6 hands inside the hand array
        for I in 1..6 loop
@@ -28,19 +27,47 @@ package body FiveHand is
           Deck.Build_Rand_Deck(d, j_Flag);
        end if; 
 
-       return (Deck => d, Hands => h, j_Flag => j_Flag, Others => ());
+       return (Deck => d, Hands => h, j_Flag => j_Flag, S_Flag => False, S_Count => 0);
 
     end Init_Five_Hand;
 
     -- NEEDS IMPLEMENTING
-    function play(file : String; j_Flag : Boolean);
-    
+    procedure Play(F : in out Five_Hand; file : String; j_Flag : Boolean) is
+    Game_Type : Integer := 0;
     begin
+        Put_Line("\n*** P O K E R   H A N D   A N A L Y Z E R ***\n");
+        if File /= "" then
+            Game_Type := 1;
+        end if;
     
-    end play;
+        if Game_Type = 0 then
+            Put_Line("\n*** USING RANDOMIZED DECK OF CARDS ***\n" & "\n*** Shuffled 52 card deck\n" & Deck_To_String(F.Deck));
+    
+        else
+            Put_Line("\n*** USING TEST DECK ***\n" & "\n*** File: " & File & "\n" & Deck_To_String(F.Deck));
+        end if;
+    
+        -- Duplicate card needs to be implemented 
+    
+        Draw_Cards(F, Game_Type);
+    
+        Put_Line("\n*** Here are the six hands...");
+        Print_All_Hands(F);
+     
+        if Game_Type = 0 then
+            Put_Line("\n*** Here is what remains in the deck...\n" & To_String(F.Deck));
+        end if;
+    
+        Put_Line("\n--- WINNING HAND ORDER ---");
+    
+        Sort_Hands(F);
+        Print_All_Hands(F);
+        Put_Line;
+    end Play;
+
     
     -- NEEDS IMPLEMENTING
-    function playStats(s_Count : Integer; j_Flag : Boolean);
+    procedure playStats(s_Count : Integer; j_Flag : Boolean) is 
     Hand_Stat_List : array(1..10) of Integer := (others => 0);
     Hand_Titles : constant array(1..10) of String := (
         "HIGH CARD",
@@ -91,31 +118,60 @@ package body FiveHand is
           AssessHand(F.Hands(I));
           Player_Scores(I) := F.Hands(I).handType;
        end loop;
-    
        return Player_Scores;
     end Hands_Stats;
     
-    -- NEEDS IMPLEMENTING
-    function draw_Cards(game_Type : Integer) is 
     
+    
+        -- NEEDS IMPLEMENTING
+    function Draw_Cards(Game : in Five_Hand; Game_Type : Integer) return Five_Hand is
+       Hand_Num : Integer := 0;
+       Result   : Five_Hand := Game;
     begin
-
-    end draw_Cards;
+       if Game_Type = 0 then
+          for I in 1..30 loop
+             if Hand_Num = 6 then
+                Hand_Num := 0;
+             end if;
+             Result.Hands(Hand_Num) := Add_Card(Game.Hands(Hand_Num), Draw_Card(Game.Deck));
+             Hand_Num := Hand_Num + 1;
+          end loop;
+       else
+          for I in 1..30 loop
+             Result.Hands(Hand_Num) := Add_Card(Game.Hands(Hand_Num), Draw_Card(Game.Deck)); 
+             if I mod 5 = 0 then
+                Hand_Num := Hand_Num + 1;
+             end if;
+          end loop;
+       end if;
     
+       return Result;
+    end Draw_Cards;
+    
+        
     -- NEEDS IMPLEMENTING
-    function print_All_Hands()
     
+    procedure print_All_Hands(F: Five_Hand) is
     begin
-
+       for I in F.Hands'Range loop
+          Put_Line(Hand_To_String(F.Hands(I)));
+       end loop;
     end print_All_Hands;
     
     -- NEEDS IMPLEMENTING
-    function sort_Hands() is 
-    
+    procedure Sort_Hands(F : in out Five_Hand) is
+    Temp : Hand;
     begin
-
-    end sort_Hands;
-    
+        for J in 0 .. F.Hands'Length - 2 loop
+            for I in 0 .. F.Hands'Length - 2 loop
+                if Compare_Hand(F.Hands(I), F.Hands(I + 1)) < 0 then
+                    Temp := F.Hands(I + 1);
+                    F.Hands(I + 1) := F.Hands(I);
+                    F.Hands(I) := Temp;
+                end if;
+            end loop;
+        end loop;
+    end Sort_Hands;
 
 
 end FiveHand;

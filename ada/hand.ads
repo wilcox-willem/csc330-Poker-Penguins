@@ -15,8 +15,8 @@ package Hand is
 
     function Init_Hand return Hand;
     function Hand_To_String(h : Hand) return String;
-    function Compare_Hand(hand1, hand2 : Hand) return Integer;
-    function CompareHelper(hand1, hand2 : Hand; diff : Integer; pass : Integer) return Integer;
+    function Compare_Hand(hand1, hand2 : in out Hand) return Integer;
+    function CompareHelper(hand1, hand2 :  in out Hand; diff : Integer; pass : Integer) return Integer;
     --  function isRSF(h : Hand) return Boolean;
     --  function isSF(h : Hand) return Boolean;
     --  function isFOAK(h : Hand) return Boolean;
@@ -32,7 +32,7 @@ package Hand is
     --  function generateAvailableCards(h : Hand; color : Integer) return Card_Array;
     --  function contains(arr : Card_Array; rank : Integer; suit : Integer) return Boolean;
 
-    --  procedure assessHand(h : Hand);
+    procedure assessHand(h : in out Hand);
     procedure Add_Card(h : in out Hand; c : Card.Card);
     --  procedure sortHand(h : Hand);
 

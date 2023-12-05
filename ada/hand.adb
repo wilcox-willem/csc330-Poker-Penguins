@@ -56,7 +56,7 @@ package body Hand is
             Append(list, To_Unbounded_String(" - Straight"));
             return To_String(list);
 
-        elsif h.handType = 4 then 
+        elsif h.handType = 4 then
             Append(list, To_Unbounded_String(" - Three of a Kind"));
             return To_String(list);
 
@@ -212,14 +212,17 @@ package body Hand is
 
 
 
-    --  function isP(h : Hand) return Boolean is
-
-    --  begin
-
-    --  return null;
+    function isP(h: Hand) return Boolean is
+       RankList : Integer_Array := getRankList(h);
+    begin
+       for I in 1..4 loop
+          if RankList(I) = RankList(I + 1) then
+             return True;
+          end if;
+       end loop;
     
-    --  end isP;
-
+       return False;
+    end isP; 
 
 
     function getTieBreakerCard(h : Hand; pass : Integer) return Card.Card is
@@ -372,23 +375,37 @@ package body Hand is
 
 
 
-    --  --  function generateAvailableCards(h : Hand; color : Integer) return Card_Array is
+    function generateAvailableCards(h : Hand; color : Integer) return Card_Array is
+       Avail_Cards : Card_Array(1..52);
+       Index : Integer := 1;
+    begin
+       for suit in 0..3 loop
+          if ((suit = 0 or suit = 2) and Color = 4) or
+             ((suit = 1 or suit = 3) and Color = 5) then
+             for rank in 2..14 loop
+                if not Contains(h.cards, rank, suit) then
+                   Avail_Cards(Index) := Init_Card(rank, suit);
+                   Index := Index + 1;
+                end if;
+             end loop;
+          end if;
+       end loop;
+       return Avail_Cards;
+    end generateAvailableCards;
 
-    --  --  begin
-
-    --  --  return null;
-    
-    --  --  end generateAvailableCards;
 
 
 
-    --  function contains(arr : Card_Array; rank : Integer; suit : Integer) return Boolean is
+    function Contains (arr : Card_Array; rank : Integer; suit : Integer) return Boolean is
+    begin
+       for I in arr'Range loop
+          if arr(I).rank = rank and then arr(I).suit = suit then
+             return True;
+          end if;
+       end loop;
+       return False;
+    end Contains;
 
-    --  begin
-
-    --  return null;
-
-    --  end contains;
 
 
 
@@ -415,26 +432,24 @@ package body Hand is
 
 
 
-    procedure Sort_Hand(H: in out Hand) is
+    procedure sortHand(h: in out Hand) is
        Temp: Card.Card;
     begin
-       H.Sorted := (others => (Rank => 0, Suit => 0));
-    
-       for I in H.Cards'Range loop
-          H.Sorted(I) := Init_Card(H.Cards(I).Rank, H.Cards(I).Suit);
+       
+       for I in h.cards'Range loop
+          h.sorted(I) := Init_Card(h.cards(I).rank, h.cards(I).suit);
        end loop;
     
        for J in 1 .. 4 loop
           for I in 1 .. 4 loop
-             if Compare_Card(H.Sorted(I), H.Sorted(I + 1)) > 0 then 
-                Temp := Init_Card(H.Sorted(I + 1).Rank, H.Sorted(I + 1).Suit);
-                H.Sorted(I + 1) := H.Sorted(I);
-                H.Sorted(I) := Temp;
+             if Compare_Card(h.sorted(I), h.sorted(I + 1)) > 0 then 
+                Temp := Init_Card(h.sorted(I + 1).rank, h.sorted(I + 1).suit);
+                h.sorted(I + 1) := h.sorted(I);
+                h.sorted(I) := Temp;
              end if;
           end loop;
        end loop;
-    end Sort_Hand;
+    end sortHand;
 
 
 end Hand;
-

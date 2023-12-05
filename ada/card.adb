@@ -2,13 +2,12 @@ package body Card is
 
     -- Initializes a new card with the specified rank and suit.
     function Init_Card (r : Integer; s : Integer) return Card is
-
         newCard : Card;
-
     begin
 
         newCard.rank := r;
         newCard.suit := s;
+
         return newCard;
 
     end Init_Card;
@@ -16,11 +15,8 @@ package body Card is
 
     -- Returns a string representation of the card.
     function Card_To_String (c : Card) return String is
-
         suitLabel : Unbounded_String;
         face      : Unbounded_String;
-        rankStr   : Unbounded_String := To_Unbounded_String(Integer'Image(c.rank));
-
     begin
 
         if    c.suit = 0 then suitLabel := To_Unbounded_String("D");
@@ -31,7 +27,15 @@ package body Card is
         elsif c.suit = 5 then suitLabel := To_Unbounded_String("B");
         end if;
 
-        if    c.rank = 10 then face := To_Unbounded_String("10"); 
+        if    c.rank = 2  then face := To_Unbounded_String("2");
+        elsif c.rank = 3  then face := To_Unbounded_String("3");
+        elsif c.rank = 4  then face := To_Unbounded_String("4");
+        elsif c.rank = 5  then face := To_Unbounded_String("5");
+        elsif c.rank = 6  then face := To_Unbounded_String("6");
+        elsif c.rank = 7  then face := To_Unbounded_String("7");
+        elsif c.rank = 8  then face := To_Unbounded_String("8");
+        elsif c.rank = 9  then face := To_Unbounded_String("9");
+        elsif c.rank = 10 then face := To_Unbounded_String("10"); 
         elsif c.rank = 11 then face := To_Unbounded_String("J");
         elsif c.rank = 12 then face := To_Unbounded_String("Q");
         elsif c.rank = 13 then face := To_Unbounded_String("K");
@@ -39,15 +43,8 @@ package body Card is
         elsif c.rank = 15 then face := To_Unbounded_String("X");
         end if;
 
-        if face = Null_Unbounded_String then
-            Append(rankStr, suitLabel);
-            return To_String(face);
-
-        else
-            Append(face, suitLabel);
-            return To_String(face);
-
-        end if;
+        Append(face, suitLabel);
+        return To_String(face);
 
     end Card_To_String;
 

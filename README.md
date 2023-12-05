@@ -46,12 +46,18 @@ To run the executable for the different modes, type the following and press ente
 
 * {executable} -f {file name}
 
-**The order in which -s and -f does not matter, its just the number of steps after -s must come after**
+**The order in which -s and -f does not matter, however the number of steps after -s must come after**
 
 
 ## Extra Credit: ADA - Compilation Instructions
+Ada is not complete.
+However, to complile Ada into an executable, type the following and press enter:
 
-Insert compilation instructions for the ADA files.
+* gnatmake -gnat2012 main.adb
+
+To run the executable, type the following and press enter:
+
+* main {arg flags}
 
 ## Authors
 Group: Poker Penguins

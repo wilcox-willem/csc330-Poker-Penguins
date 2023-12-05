@@ -1,4 +1,5 @@
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
+with Ada.Strings.Fixed; use Ada.Strings.Fixed;
 
 package Card is
 
@@ -6,8 +7,8 @@ package Card is
     -- This struct defines a card object with a rank and suit.
     type Card is record
 
-        rank : Integer;
-        suit : Integer;
+        rank : Integer := -1;
+        suit : Integer := -1;
 
     end record;
 

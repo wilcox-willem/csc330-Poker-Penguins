@@ -1,6 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
 package body Hand is
 
+--  Initializes a new hand with an empty list of cards, its sorted variant, and a default hand type of 0.
     function Init_Hand return Hand is
         newHand : Hand;
     begin
@@ -11,7 +12,7 @@ package body Hand is
     end Init_Hand;
 
 
-
+--  Returns a string representation of the hand.
     function Hand_To_String(h : Hand) return String is
         list : Unbounded_String;
     begin
@@ -77,11 +78,10 @@ package body Hand is
     end Hand_To_String;
 
 
-
-    function Compare_Hand(hand1, hand2 : Hand) return Integer is
-
+--  Compares this hand with another hand based on their ranks.
+--   Used to sort each hand type and tiebreakers accordingly.
+    function Compare_Hand(hand1, hand2 : in out Hand) return Integer is
         typeComparison : Integer;
-
     begin
 
         assessHand(hand1);
@@ -94,8 +94,8 @@ package body Hand is
     end Compare_Hand;
 
 
-
-    function CompareHelper(hand1, hand2 : Hand; diff : Integer; pass : Integer) return Integer is
+--  Recursive helper method for the compare_hand method.
+    function CompareHelper(hand1, hand2 : in out Hand; diff : Integer; pass : Integer) return Integer is
         
         thisBreaker : Card.Card;
         otherBreaker : Card.Card;
@@ -112,7 +112,7 @@ package body Hand is
         otherBreaker := getTieBreakerCard(hand2, pass);
 
         rankDiff := thisBreaker.rank - otherBreaker.rank;
-        rankDiff := thisBreaker.suit - otherBreaker.suit;
+        suitDiff := thisBreaker.suit - otherBreaker.suit;
 
         if (pass < 2 and (hand1.handType = 2 or hand1.handType = 3)) then
             if (rankDiff = 0) then
@@ -131,87 +131,115 @@ package body Hand is
     end CompareHelper;
 
 
+--  Determines if the hand is a royal straight flush.
+    function isRSF(h : Hand) return Boolean is
+        rankList : Integer_Array := getRankList(h);
+    begin
 
-    --  function isRSF(h : Hand) return Boolean is
-
-    --  begin
-
-    --  return null;
+        return isSF(h) and rankList(1) = 10 and rankList(5) = 14;
     
     --  end isRSF;
 
 
+--  Determines if the hand is a straight flush.
+    function isSF(h : Hand) return Boolean is
+    begin
 
-    --  function isSF(h : Hand) return Boolean is
-
-    --  begin
-
-    --  return null;
+        return isS(h) and isF(h);
     
     --  end isSF;
 
 
+--  Determines if the hand is a straight flush.
+    function isFOAK(h : Hand) return Boolean is
+        rankList : Integer_Array := getRankList(h);
+    begin
 
-    --  function isFOAK(h : Hand) return Boolean is
-
-    --  begin
-
-    --  return null;
+        return (rankList(1) = rankList(4)) or (rankList(2) = rankList(5));
     
     --  end isFOAK;
 
 
+--  Determines if the hand is a full house.
+    function isFH(h : Hand) return Boolean is
+        rankList : Integer_Array := getRankList(h);
+    begin
 
-    --  function isFH(h : Hand) return Boolean is
-
-    --  begin
-
-    --  return null;
+        return ((rankList(1) = rankList(2)) and (rankList(3) = rankList(5))) or ((rankList(1) = rankList(3)) and (rankList(4) = rankList(5)));
     
     --  end isFH;
 
 
+--  Determines if the hand is a flush.
+    function isF(h : Hand) return Boolean is
+        suit : Integer := h.sorted(1).suit;
+    begin
 
-    --  function isF(h : Hand) return Boolean is
+        for i in 1..4 loop
+            if (h.sorted(i).suit /= suit) then
+                return false;
+            end if;
+        end loop;
 
-    --  begin
-
-    --  return null;
+        return h.sorted(5).suit = suit;
     
     --  end isF;
 
 
+--  Determines if the hand is a straight.
+    function isS(h : Hand) return Boolean is
+        rankList : Integer_Array := getRankList(h);
+        temp : Integer;
+    begin
 
-    --  function isS(h : Hand) return Boolean is
+        if (rankList(5) = 14 and rankList(1) = 2) then
+            rankList(5) := 1;
+            for j in 1 .. 4 loop
+                for i in 1 .. 4 loop
+                    if rankList(i) - rankList(i + 1) > 0 then
+                        temp := rankList(i + 1);
+                        rankList(i + 1) := rankList(i);
+                        rankList(i) := temp;
+                    end if;
+                end loop;
+            end loop;
+        end if;
 
-    --  begin
-
-    --  return null;
+        for i in 1..4 loop
+            if (rankList(i + 1) /= rankList(i) + 1) then
+                return false;
+            end if;
+        end loop;
     
-    --  end isS;
+        return true;
+    end isS;
 
 
+--  Determines if the hand is a three of a kind.
+    function isTOAK(h : Hand) return Boolean is
+        rankList : Integer_Array := getRankList(h);
+    begin
 
-    --  function isTOAK(h : Hand) return Boolean is
-
-    --  begin
-
-    --  return null;
+        return (rankList(1) = rankList(3)) or
+               (rankList(2) = rankList(4)) or
+               (rankList(3) = rankList(5));
     
     --  end isTOAK;
 
 
+--  Determines if the hand is a two pair.
+    function isTP(h : Hand) return Boolean is
+        rankList : Integer_Array := getRankList(h);
+    begin
 
-    --  function isTP(h : Hand) return Boolean is
-
-    --  begin
-
-    --  return null;
+        return (rankList(1) = rankList(2) and rankList(3) = rankList(4)) or
+		       (rankList(1) = rankList(2) and rankList(4) = rankList(5)) or
+		       (rankList(2) = rankList(3) and rankList(4) = rankList(5));
     
     --  end isTP;
 
 
-
+--  Determines if the hand is a pair.
     function isP(h: Hand) return Boolean is
        RankList : Integer_Array := getRankList(h);
     begin
@@ -225,6 +253,7 @@ package body Hand is
     end isP; 
 
 
+--  Determines the tie breaking card of the hand depending on its handType.
     function getTieBreakerCard(h : Hand; pass : Integer) return Card.Card is
 
         ret : Card.Card;
@@ -324,7 +353,7 @@ package body Hand is
     end getTieBreakerCard;
 
 
-
+--  Helper method to get a sorted list of ranks in the hand.
     function getRankList(h : Hand) return Integer_Array is
         rankList : Integer_Array(1..5);
         temp : Integer;
@@ -349,7 +378,7 @@ package body Hand is
     end getRankList;
 
 
-
+--  Gets the kicker card for pairs and two pairs.
     function getKicker(h : Hand) return Card.Card is
         nonPairList : Card_Array(1..5);
         max : Card.Card;
@@ -374,10 +403,24 @@ package body Hand is
     end getKicker;
 
 
+--  Helper method to see if a certain card of rank r and suit s is inside the array.
+    function Contains (arr : Card_Array; rank : Integer; suit : Integer) return Boolean is
+    begin
+       for I in arr'Range loop
+          if arr(I).rank = rank and arr(I).suit = suit then
+             return True;
+          end if;
+       end loop;
 
+       return False;
+    end Contains;
+
+
+--  Generates an array to keep track of every card that can be used as a joker.
     function generateAvailableCards(h : Hand; color : Integer) return Card_Array is
-       Avail_Cards : Card_Array(1..52);
+       Avail_Cards : Card_Array(1..26);
        Index : Integer := 1;
+       newC : Card.Card;
     begin
        for suit in 0..3 loop
           if ((suit = 0 or suit = 2) and Color = 4) or
@@ -393,30 +436,124 @@ package body Hand is
        return Avail_Cards;
     end generateAvailableCards;
 
+       for s in 0..3 loop
+          if ((s = 0 or s = 2) and color = 4) or ((s = 1 or s = 3) and color = 5) then
 
+             for r in 2..14 loop
+                if (Contains(h.cards, r, s)) then
+                    null;
+                end if;
 
+                newC := Init_Card(r, s);
+                Avail_Cards(Index) := newC;
+                Index := Index + 1;
 
-    function Contains (arr : Card_Array; rank : Integer; suit : Integer) return Boolean is
-    begin
-       for I in arr'Range loop
-          if arr(I).rank = rank and then arr(I).suit = suit then
-             return True;
+             end loop;
+
           end if;
+
        end loop;
-       return False;
-    end Contains;
+
+       return Avail_Cards;
+
+    end generateAvailableCards;
 
 
+--  Analyzes the current collection of cards in the hand and determines its hand type.
+--  The sorted instance variable is updated to contain the cards sorted by rank.
+    procedure assessHand(h : in out Hand) is
+        jokerIndex1 : Integer := -1;
+        jokerIndex2 : Integer := -1;
+
+        jokerSuit1 : Integer := 0;
+        jokerSuit2 : Integer := 0;
+
+        availCards1 : Card_Array(1..26);
+        availCards2 : Card_Array(1..26);
+
+        topScore : Integer := 0;
+        currScore : Integer := 0;
+        topSorted : Card_Array(1..5);
+        
+    begin
+
+        for i in h.cards'Range loop
+            if (h.cards(i).rank = 15) then
+                if (jokerIndex1 = -1) then
+                    jokerIndex1 := i;
+                    jokerSuit1 := h.cards(i).suit;
+                    availCards1 := generateAvailableCards(h, jokerSuit1);
+                else
+                    jokerIndex2 := i;
+                    jokerSuit2 := h.cards(i).suit;
+                    availCards2 := generateAvailableCards(h, jokerSuit2);
+                    exit;
+                end if;
+            end if;
+        end loop;
+
+        if (jokerIndex1 /= -1) then
+            for i in availCards1'Range loop
+                for j in availCards2'Range loop
+                    h.cards(jokerIndex1) := Init_Card(availCards1(i).rank, availCards1(i).suit);
+
+                    if (jokerIndex2 /= -1) then
+                        h.cards(jokerIndex2) := Init_Card(availCards2(j).rank, availCards2(j).suit);
+                    end if;
+
+                    sortHand(h);
+
+                    if (isRSF(h)) then currScore := 10;
+                    elsif (isSF(h)) then currScore := 9;
+                    elsif (isFOAK(h)) then currScore := 8;
+                    elsif (isFH(h)) then currScore := 7;
+                    elsif (isF(h)) then currScore := 6;
+                    elsif (isS(h)) then currScore := 5;
+                    elsif (isTOAK(h)) then currScore := 4;
+                    elsif (isTP(h)) then currScore := 3;
+                    elsif (isP(h)) then currScore := 2;
+                    else currScore := 1;
+                    end if;
+
+                    h.cards(jokerIndex1) := Init_Card(15, jokerSuit1);
+
+                    if (jokerIndex2 /= -1) then
+                        h.cards(jokerIndex2) := Init_Card(15, jokerSuit2);
+                    end if;
+
+                    if (currScore > topScore) then
+                        topScore := currScore;
+                        topSorted := h.sorted;
+                    end if;
+
+                    if (jokerIndex2 = -1) then
+                        exit;
+                    end if;
+                end loop;
+            end loop;
+
+            h.handType := topScore;
+            h.sorted := topSorted;
+        else
+            sortHand(h);
+
+            if (isRSF(h)) then h.handType := 10;
+            elsif (isSF(h)) then h.handType := 9;
+            elsif (isFOAK(h)) then h.handType := 8;
+            elsif (isFH(h)) then h.handType := 7;
+            elsif (isF(h)) then h.handType := 6;
+            elsif (isS(h)) then h.handType := 5;
+            elsif (isTOAK(h)) then h.handType := 4;
+            elsif (isTP(h)) then h.handType := 3;
+            elsif (isP(h)) then h.handType := 2;
+            else h.handType := 1;
+            end if;
+        end if;
+
+    end assessHand;
 
 
-    --  procedure assessHand(h : Hand) is
-
-    --  begin
-
-    --  end assessHand; 
-
-
-
+--  Adds a card to the hand's list of cards.
     procedure Add_Card(h : in out Hand; c : Card.Card) is
     begin
 
@@ -431,11 +568,13 @@ package body Hand is
     end Add_Card;
 
 
-
+--  Sets the sorted instance variable to a sorted version of a provided hand.
     procedure sortHand(h: in out Hand) is
+
        Temp: Card.Card;
+
     begin
-       
+    
        for I in h.cards'Range loop
           h.sorted(I) := Init_Card(h.cards(I).rank, h.cards(I).suit);
        end loop;
@@ -449,7 +588,7 @@ package body Hand is
              end if;
           end loop;
        end loop;
-    end sortHand;
 
+    end sortHand;
 
 end Hand;

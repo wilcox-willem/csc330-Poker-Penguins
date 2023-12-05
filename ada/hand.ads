@@ -4,7 +4,7 @@ with Card; use Card;
 --  Represents a hand of playing cards.
 --  This class defines a hand object that can hold a collection of card objects.
 package Hand is
-    type Card_Array is array (Positive range <>) of Card.Card;
+    type Card_Array is array(Positive range <>) of Card.Card;
     type Integer_Array is array(Positive range <>) of Integer;
 
     type Hand is record

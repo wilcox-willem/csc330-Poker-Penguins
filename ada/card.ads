@@ -1,4 +1,5 @@
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
+with Ada.Strings.Fixed; use Ada.Strings.Fixed;
 
 package Card is
 

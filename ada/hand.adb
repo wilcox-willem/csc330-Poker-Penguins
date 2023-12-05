@@ -1,4 +1,3 @@
-with Ada.Text_IO; use Ada.Text_IO;
 package body Hand is
 
 --  Initializes a new hand with an empty list of cards, its sorted variant, and a default hand type of 0.

@@ -1,3 +1,4 @@
+with Ada.Text_IO; use Ada.Text_IO;
 package body Hand is
 
 --  Initializes a new hand with an empty list of cards, its sorted variant, and a default hand type of 0.
@@ -137,7 +138,7 @@ package body Hand is
 
         return isSF(h) and rankList(1) = 10 and rankList(5) = 14;
     
-    end isRSF;
+    --  end isRSF;
 
 
 --  Determines if the hand is a straight flush.
@@ -146,7 +147,7 @@ package body Hand is
 
         return isS(h) and isF(h);
     
-    end isSF;
+    --  end isSF;
 
 
 --  Determines if the hand is a straight flush.
@@ -156,7 +157,7 @@ package body Hand is
 
         return (rankList(1) = rankList(4)) or (rankList(2) = rankList(5));
     
-    end isFOAK;
+    --  end isFOAK;
 
 
 --  Determines if the hand is a full house.
@@ -166,7 +167,7 @@ package body Hand is
 
         return ((rankList(1) = rankList(2)) and (rankList(3) = rankList(5))) or ((rankList(1) = rankList(3)) and (rankList(4) = rankList(5)));
     
-    end isFH;
+    --  end isFH;
 
 
 --  Determines if the hand is a flush.
@@ -182,7 +183,7 @@ package body Hand is
 
         return h.sorted(5).suit = suit;
     
-    end isF;
+    --  end isF;
 
 
 --  Determines if the hand is a straight.
@@ -223,7 +224,7 @@ package body Hand is
                (rankList(2) = rankList(4)) or
                (rankList(3) = rankList(5));
     
-    end isTOAK;
+    --  end isTOAK;
 
 
 --  Determines if the hand is a two pair.
@@ -235,7 +236,7 @@ package body Hand is
 		       (rankList(1) = rankList(2) and rankList(4) = rankList(5)) or
 		       (rankList(2) = rankList(3) and rankList(4) = rankList(5));
     
-    end isTP;
+    --  end isTP;
 
 
 --  Determines if the hand is a pair.
@@ -421,6 +422,19 @@ package body Hand is
        Index : Integer := 1;
        newC : Card.Card;
     begin
+       for suit in 0..3 loop
+          if ((suit = 0 or suit = 2) and Color = 4) or
+             ((suit = 1 or suit = 3) and Color = 5) then
+             for rank in 2..14 loop
+                if not Contains(h.cards, rank, suit) then
+                   Avail_Cards(Index) := Init_Card(rank, suit);
+                   Index := Index + 1;
+                end if;
+             end loop;
+          end if;
+       end loop;
+       return Avail_Cards;
+    end generateAvailableCards;
 
        for s in 0..3 loop
           if ((s = 0 or s = 2) and color = 4) or ((s = 1 or s = 3) and color = 5) then

@@ -31,8 +31,8 @@ package Hand is
     function getTieBreakerCard(h : Hand; pass : Integer) return Card.Card;
     function getRankList(h : Hand) return Integer_Array;
     function getKicker(h : Hand) return Card.Card;
-    function generateAvailableCards(h : Hand; color : Integer) return Card_Array;
-    function contains(arr : Card_Array; rank : Integer; suit : Integer) return Boolean;
+    --  function generateAvailableCards(h : Hand; color : Integer) return Card_Array;
+    --  function contains(arr : Card_Array; rank : Integer; suit : Integer) return Boolean;
 
     procedure assessHand(h : in out Hand);
     procedure Add_Card(h : in out Hand; c : Card.Card);

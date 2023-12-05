@@ -3,7 +3,7 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Card; use Card;
 with Hand; use Hand;
 
-package FiveHand is
+package body FiveHand is
 
     -- Represents the game of Five Hand, a poker game with 6 hands.
     -- The game can be played with a randomized deck or a deck loaded from a file.
@@ -13,7 +13,7 @@ package FiveHand is
     -- STILL NEEDS IMPLEMENTING
     function Init_Five_Hand (file : String; j_Flag : Boolean) return FiveHand is
         d : Deck := Init_Deck();
-        h : Hands -- hand array
+        h : Hands -- hand array;
 
     begin
        -- Initialize 6 hands inside the hand array
@@ -82,8 +82,21 @@ package FiveHand is
         Put_Line;
     end playStats;
     
+    
     -- NEEDS IMPLEMENTING
-    function draw_Cards(game_Type : Integer);
+    function Hands_Stats(F : Five_Hand) return Integer_Array is
+       Player_Scores : Integer_array(1..6);
+    begin
+       for I in F.Hands'Range loop
+          AssessHand(F.Hands(I));
+          Player_Scores(I) := F.Hands(I).handType;
+       end loop;
+    
+       return Player_Scores;
+    end Hands_Stats;
+    
+    -- NEEDS IMPLEMENTING
+    function draw_Cards(game_Type : Integer) is 
     
     begin
 
@@ -97,23 +110,12 @@ package FiveHand is
     end print_All_Hands;
     
     -- NEEDS IMPLEMENTING
-    function sort_Hands();
+    function sort_Hands() is 
     
     begin
 
     end sort_Hands;
     
-    -- NEEDS IMPLEMENTING
-    function Hands_Stats(F : Five_Hand) return Integer_Array is
-       Player_Scores : array(1..6) of Integer;
-    begin
-       for I in F.Hands'Range loop
-          AssessHand(F.Hands(I));
-          Player_Scores(I) := F.Hands(I).handType;
-       end loop;
-    
-       return Player_Scores;
-    end Hands_Stats;
 
 
 end FiveHand;

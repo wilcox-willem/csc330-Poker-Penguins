@@ -542,27 +542,27 @@ package body Hand is
 
 
 
-    procedure sortHand(h: in out Hand) is
+    --  procedure sortHand(h: in out Hand) is
 
-       Temp: Card.Card;
 
-    begin
+
+    --  begin
     
-       for I in h.Cards'Range loop
-          h.Sorted(I) := Init_Card(h.Cards(I).rank, h.Cards(I).suit);
-       end loop;
-    
-       for J in 1 .. 4 loop
-          for I in 1 .. 4 loop
-             if Compare_Card(h.Sorted(I), h.Sorted(I + 1)) > 0 then 
-                Temp := Init_Card(h.Sorted(I + 1).rank, h.Sorted(I + 1).suit);
-                h.Sorted(I + 1) := h.Sorted(I);
-                h.Sorted(I) := Temp;
-             end if;
-          end loop;
-       end loop;
 
-    end sortHand;
+
+
+
+
+
+
+
+
+
+
+
+
+
+    --  end sortHand;
 
 
 end Hand;

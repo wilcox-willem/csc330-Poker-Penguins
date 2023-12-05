@@ -155,7 +155,7 @@ package body Hand is
         rankList : Integer_Array := getRankList(h);
     begin
 
-        return (rankList(1) = rankList(4)) || (rankList(2) = rankList(5));
+        return (rankList(1) = rankList(4)) or (rankList(2) = rankList(5));
     
     end isFOAK;
 
@@ -165,8 +165,7 @@ package body Hand is
         rankList : Integer_Array := getRankList(h);
     begin
 
-        return (rankList(1) = rankList(2)) and (rankList(3) = rankList(5)) or
-               (rankList(1) = rankList(3)) and (rankList(4) = rankList(5));
+        return ((rankList(1) = rankList(2)) and (rankList(3) = rankList(5))) or ((rankList(1) = rankList(3)) and (rankList(4) = rankList(5)));
     
     end isFH;
 
@@ -190,6 +189,7 @@ package body Hand is
 
     function isS(h : Hand) return Boolean is
         rankList : Integer_Array := getRankList(h);
+        temp : Integer;
     begin
 
         if (rankList(5) = 14 and rankList(1) = 2) then
@@ -220,9 +220,9 @@ package body Hand is
         rankList : Integer_Array := getRankList(h);
     begin
 
-        return (rankList[1] = rankList[3]) or
-               (rankList[2] = rankList[4]) or
-               (rankList[3] = rankList[5]);
+        return (rankList(1) = rankList(3)) or
+               (rankList(2) = rankList(4)) or
+               (rankList(3) = rankList(5));
     
     end isTOAK;
 
@@ -232,21 +232,26 @@ package body Hand is
         rankList : Integer_Array := getRankList(h);
     begin
 
-        return (rankList[1] = rankList[2] and rankList[3] = rankList[4]) or
-		       (rankList[1] = rankList[2] and rankList[4] = rankList[5]) or
-		       (rankList[2] = rankList[3] and rankList[4] = rankList[5]);
+        return (rankList(1) = rankList(2) and rankList(3) = rankList(4)) or
+		       (rankList(1) = rankList(2) and rankList(4) = rankList(5)) or
+		       (rankList(2) = rankList(3) and rankList(4) = rankList(5));
     
     end isTP;
 
 
 
-    --  function isP(h : Hand) return Boolean is
-    -- rankList : Integer_Array := getRankList(h);
+    --  function isP(h: Hand) return Boolean is
+
     --  begin
 
-    --  return null;
+
+
+
+
     
+
     --  end isP;
+
 
 
 
@@ -400,13 +405,22 @@ package body Hand is
 
 
 
-    --  --  function generateAvailableCards(h : Hand; color : Integer) return Card_Array is
+    --  function generateAvailableCards(h : Hand; color : Integer) return Card_Array is
 
-    --  --  begin
+    --  begin
 
-    --  --  return null;
+
+
+
+
+
+
+
+
+
+
     
-    --  --  end generateAvailableCards;
+    --  end generateAvailableCards;
 
 
 
@@ -414,7 +428,9 @@ package body Hand is
 
     --  begin
 
-    --  return null;
+
+
+
 
     --  end contains;
 
@@ -440,11 +456,11 @@ package body Hand is
             if (h.cards(i).rank = 15) then
                 jokerIndex1 := i;
                 jokerSuit1 := h.cards(i).suit;
-                availCards1 := h.generateAvailableCards(jokerSuit1);
+                availCards1 := generateAvailableCards(h, jokerSuit1);
             else
                 jokerIndex2 := i;
                 jokerSuit2 := h.cards(i).suit;
-                availCards2 := h.generateAvailableCards(jokerSuit2);
+                availCards2 := generateAvailableCards(h, jokerSuit2);
                 exit;
             end if;
         end loop;

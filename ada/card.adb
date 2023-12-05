@@ -7,6 +7,7 @@ package body Card is
 
         newCard.rank := r;
         newCard.suit := s;
+
         return newCard;
 
     end Init_Card;
@@ -15,7 +16,7 @@ package body Card is
     -- Returns a string representation of the card.
     function Card_To_String (c : Card) return String is
         suitLabel : Unbounded_String;
-        face      : Unbounded_String;
+        face      : Unbounded_String := To_Unbounded_String("");
         rankStr   : Unbounded_String := To_Unbounded_String(Integer'Image(c.rank));
     begin
 
@@ -35,9 +36,9 @@ package body Card is
         elsif c.rank = 15 then face := To_Unbounded_String("X");
         end if;
 
-        if face = Null_Unbounded_String then
+        if face = To_Unbounded_String("") then
             Append(rankStr, suitLabel);
-            return To_String(face);
+            return To_String(rankStr);
 
         else
             Append(face, suitLabel);
@@ -53,7 +54,7 @@ package body Card is
     begin
 
         return c1.rank - c2.rank;
-        
+
     end Compare_Card;
 
 end Card;

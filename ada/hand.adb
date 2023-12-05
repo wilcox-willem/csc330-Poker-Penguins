@@ -407,31 +407,42 @@ package body Hand is
     function Contains (arr : Card_Array; rank : Integer; suit : Integer) return Boolean is
     begin
        for I in arr'Range loop
-          if arr(I).rank = rank and then arr(I).suit = suit then
+          if arr(I).rank = rank and arr(I).suit = suit then
              return True;
           end if;
        end loop;
+
        return False;
     end Contains;
 
 
 --  Generates an array to keep track of every card that can be used as a joker.
     function generateAvailableCards(h : Hand; color : Integer) return Card_Array is
-       Avail_Cards : Card_Array(1..52);
+       Avail_Cards : Card_Array(1..26);
        Index : Integer := 1;
+       newC : Card.Card;
     begin
-       for suit in 0..3 loop
-          if ((suit = 0 or suit = 2) and Color = 4) or
-             ((suit = 1 or suit = 3) and Color = 5) then
-             for rank in 2..14 loop
-                if not Contains(h.cards, rank, suit) then
-                   Avail_Cards(Index) := Init_Card(rank, suit);
-                   Index := Index + 1;
+
+       for s in 0..3 loop
+          if ((s = 0 or s = 2) and color = 4) or ((s = 1 or s = 3) and color = 5) then
+
+             for r in 2..14 loop
+                if (Contains(h.cards, r, s)) then
+                    null;
                 end if;
+
+                newC := Init_Card(r, s);
+                Avail_Cards(Index) := newC;
+                Index := Index + 1;
+
              end loop;
+
           end if;
+
        end loop;
+
        return Avail_Cards;
+
     end generateAvailableCards;
 
 
@@ -444,8 +455,8 @@ package body Hand is
         jokerSuit1 : Integer := 0;
         jokerSuit2 : Integer := 0;
 
-        availCards1 : Card_Array(1..52);
-        availCards2 : Card_Array(1..52);
+        availCards1 : Card_Array(1..26);
+        availCards2 : Card_Array(1..26);
 
         topScore : Integer := 0;
         currScore : Integer := 0;
@@ -455,24 +466,26 @@ package body Hand is
 
         for i in h.cards'Range loop
             if (h.cards(i).rank = 15) then
-                jokerIndex1 := i;
-                jokerSuit1 := h.cards(i).suit;
-                availCards1 := generateAvailableCards(h, jokerSuit1);
-            else
-                jokerIndex2 := i;
-                jokerSuit2 := h.cards(i).suit;
-                availCards2 := generateAvailableCards(h, jokerSuit2);
-                exit;
+                if (jokerIndex1 = -1) then
+                    jokerIndex1 := i;
+                    jokerSuit1 := h.cards(i).suit;
+                    availCards1 := generateAvailableCards(h, jokerSuit1);
+                else
+                    jokerIndex2 := i;
+                    jokerSuit2 := h.cards(i).suit;
+                    availCards2 := generateAvailableCards(h, jokerSuit2);
+                    exit;
+                end if;
             end if;
         end loop;
 
         if (jokerIndex1 /= -1) then
             for i in availCards1'Range loop
                 for j in availCards2'Range loop
-                    h.cards(jokerIndex1) := Init_Card(h.cards(i).rank, h.cards(i).suit);
+                    h.cards(jokerIndex1) := Init_Card(availCards1(i).rank, availCards1(i).suit);
 
                     if (jokerIndex2 /= -1) then
-                        h.cards(jokerIndex2) := Init_Card(h.cards(j).rank, h.cards(j).suit);
+                        h.cards(jokerIndex2) := Init_Card(availCards2(j).rank, availCards2(j).suit);
                     end if;
 
                     sortHand(h);
